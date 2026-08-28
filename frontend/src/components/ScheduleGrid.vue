@@ -3,17 +3,34 @@ import { ref, onMounted } from 'vue';
 import { bookingApi } from '../services/bookingApi';
 import SlotButton from './SlotButton.vue';
 
+
+
 const slots = ref<any[]>([]);
 const isLoading = ref(true);
 const errorMsg = ref ('')
 const selectedSlot = ref<string | null>(null) //menyimpan jadwal yang sedang diklick user
 const emit = defineEmits(['slotSelected'])
 
+
+
 // Tarik data ketersediaan pas komponen pertama kali muncul di layar
 onMounted(async () => {
     try {
         const response = await bookingApi.getBookings()
+        const now = new Date();
+        const currentHour = now.getHours().toString().padStart(2, '0');
+        const currentMinute = now.getMinutes().toString().padStart(2, '0');
+        const currentTime = `${currentHour}:${currentMinute}`
         slots.value = response.data
+
+        slots.value = response.data.map((slot: any) => {
+    if(slot.time_slot < currentTime) {
+        return {
+            ...slot,
+            status: 'booked'
+        }
+    }
+})
 
     } catch (err) {
         errorMsg.value = 'Gagal memuat jadwal. Silahkan refresh browser'
@@ -21,6 +38,8 @@ onMounted(async () => {
         isLoading.value = false
     }
 })
+
+
 </script>
 
 <template>
