@@ -39,8 +39,6 @@ const handleBookingSubmit = async (formData: { customer_name: string, customer_p
     }, 4000);
     
   } catch (error: any) {
-    console.error('terjadi kesalahan:', error)
-
     // Tangkap kode 422 dari backend (validasi gagal/slot sudah dipesan)
     if (error.response && error.response.status === 422) {
       const backendMessage = error.response.data.errors 

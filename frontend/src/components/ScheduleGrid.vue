@@ -30,6 +30,8 @@ onMounted(async () => {
             status: 'booked'
         }
     }
+
+    return slot
 })
 
     } catch (err) {

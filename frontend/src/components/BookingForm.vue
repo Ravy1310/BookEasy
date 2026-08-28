@@ -15,7 +15,7 @@ const customerPhone = ref('')
 const isFormValid = computed(() => {
     return customerName.value.trim() !== ''&&
             customerPhone.value.trim() !== ''&&
-            !!props.selectedSlot !== null
+            !!props.selectedSlot 
 })
 
 const handleSubmit = () => {
