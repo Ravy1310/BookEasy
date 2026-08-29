@@ -1,61 +1,29 @@
-# BookEasy — Backend (Laravel REST API)
+# BookEasy — Backend
 
-REST API untuk sistem reservasi jadwal BookEasy. Dibangun dengan Laravel 13.x, PHP 8.3, dan MySQL 8.x.
+REST API untuk sistem reservasi jadwal BookEasy. Dibangun dengan Laravel 13.x dan PHP 8.3.
+
+## Tech Stack
+
+- **Laravel 13.x** — REST API
+- **PHP 8.3** — Backend language
+- **PostgreSQL** — Database (Supabase)
+- **Sanctum** — Token-based auth
+- **Pest PHP 4.x** — Testing
 
 ## Prasyarat
 
-- PHP 8.3 atau lebih baru (cek: `php -v`)
-- Composer (cek: `composer -V`)
-- MySQL 8.x (cek: `mysql --version`)
-- Node.js (untuk build asset, opsional saat development API)
+- PHP 8.3+
+- Composer
+- PostgreSQL (atau Supabase)
 
 ## Setup
 
-### 1. Install Dependencies
-
 ```bash
 composer install
-```
-
-### 2. Konfigurasi Environment
-
-```bash
 cp .env.example .env
 php artisan key:generate
-```
-
-Buka `.env`, sesuaikan koneksi MySQL:
-
-```env
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=bookeasy
-DB_USERNAME=root
-DB_PASSWORD=
-```
-
-Pastikan database `bookeasy` sudah ada di MySQL. Kalau belum, buat dulu:
-
-```sql
-CREATE DATABASE bookeasy;
-```
-
-### 3. Jalankan Migrations
-
-```bash
-php artisan migrate
-```
-
-### 4. (Opsional) Seed Data Contoh
-
-```bash
-php artisan db:seed
-```
-
-## Menjalankan Server
-
-```bash
+php artisan migrate --force
+php artisan db:seed --force
 php artisan serve
 ```
 
@@ -64,33 +32,43 @@ API tersedia di `http://localhost:8000`.
 ## Testing
 
 ```bash
-# Jalankan semua test
 php artisan test
-
-# Atau pakai composer script
-composer test
 ```
 
-Test menggunakan SQLite in-memory (otomatis dikonfigurasi di `phpunit.xml`), jadi tidak perlu setup database terpisah untuk testing.
+Atau pakai composer script:
+
+```bash
+composer test
+```
 
 ### Struktur Test
 
 ```
 tests/
 ├── Feature/
-│   ├── BookingApiTest.php       # Test endpoint booking (CRUD, validasi, conflict)
-│   └── ExampleTest.php
+│   ├── BookingApiTest.php       # Endpoint booking
+│   ├── AuthApiTest.php          # Login/logout
+│   └── DashboardApiTest.php     # Dashboard admin
 └── Unit/
-    ├── BookingServiceTest.php   # Test logic service (race condition, transaction)
-    └── ExampleTest.php
+    └── BookingServiceTest.php   # Logic service
 ```
 
 ## Endpoint API
 
-| Method | Endpoint | Deskripsi | Auth |
-|---|---|---|---|
-| GET | `/api/bookings?date=YYYY-MM-DD` | Ambil daftar slot + status | Tidak |
-| POST | `/api/bookings` | Booking baru | Tidak |
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/health` | No | Health check |
+| GET | `/api/bookings?date=YYYY-MM-DD` | No | Ambil daftar slot + status |
+| POST | `/api/bookings` | No | Booking baru |
+| POST | `/api/auth/login` | No | Admin login |
+| POST | `/api/auth/logout` | Yes | Admin logout |
+| GET | `/api/admin/dashboard` | Yes | Dashboard admin |
+| GET | `/api/admin/schedules` | Yes | Jadwal operasional |
+| PUT | `/api/admin/schedules` | Yes | Update jadwal |
+| GET | `/api/admin/holidays` | Yes | Daftar hari libur |
+| POST | `/api/admin/holidays` | Yes | Tambah hari libur |
+| DELETE | `/api/admin/holidays/{date}` | Yes | Hapus hari libur |
+| DELETE | `/api/admin/bookings/{id}` | Yes | Batalkan booking |
 
 ## Struktur Folder
 
@@ -98,28 +76,52 @@ tests/
 backend/
 ├── app/
 │   ├── Http/
-│   │   ├── Controllers/Api/     # BookingController
-│   │   ├── Requests/            # StoreBookingRequest (validasi)
-│   │   └── Resources/           # BookingResource (response format)
-│   ├── Models/                  # Booking
-│   └── Services/                # BookingService (logic bisnis)
+│   │   ├── Controllers/
+│   │   │   ├── AuthController.php
+│   │   │   ├── BookingController.php
+│   │   │   ├── DashboardController.php
+│   │   │   └── ScheduleController.php
+│   │   └── Middleware/
+│   │       └── AdminAuth.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Booking.php
+│   │   ├── Schedule.php
+│   │   └── Holiday.php
+│   └── Services/
+│       ├── BookingService.php
+│       └── WhatsAppService.php
 ├── database/
-│   ├── migrations/              # Schema database
-│   └── factories/               # BookingFactory (data dummy testing)
-├── routes/
-│   └── api.php                  # Route definition
-├── tests/                       # Pest test files
-└── phpunit.xml                  # Test configuration
+│   ├── migrations/
+│   └── seeders/
+├── routes/api.php
+├── tests/
+├── Dockerfile
+└── composer.json
 ```
 
-## Format Response API
+## Deploy (Render)
 
-Semua response mengikuti format konsisten:
+1. Push ke GitHub
+2. Import repo di Render (Docker)
+3. Set environment variables
 
-```json
-// Sukses
-{ "success": true, "data": { ... } }
+### Environment Variables
 
-// Gagal
-{ "success": false, "message": "...", "errors": { ... } }
-```
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `APP_ENV` | Environment | `production` |
+| `APP_DEBUG` | Debug mode | `false` |
+| `APP_KEY` | Encryption key | *(generate with `php artisan key:generate --show`)* |
+| `APP_URL` | App URL | `https://bookeasy-api.onrender.com` |
+| `FRONTEND_URL` | Frontend URL | `https://your-app.vercel.app` |
+| `DB_CONNECTION` | Database driver | `pgsql` |
+| `DB_HOST` | Database host | `aws-1-ap-southeast-1.pooler.supabase.com` |
+| `DB_PORT` | Database port | `5432` |
+| `DB_DATABASE` | Database name | `postgres` |
+| `DB_USERNAME` | Database user | `postgres.xxxxx` |
+| `DB_PASSWORD` | Database password | *(from Supabase)* |
+| `SANCTUM_STATEFUL_DOMAINS` | SPA domains | `your-app.vercel.app` |
+| `SESSION_DRIVER` | Session driver | `cookie` |
+| `CACHE_STORE` | Cache driver | `file` |
+| `LOG_CHANNEL` | Log channel | `stderr` |

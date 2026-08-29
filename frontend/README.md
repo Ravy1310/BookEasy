@@ -1,65 +1,58 @@
-# BookEasy — Frontend (Vue.js SPA)
+# BookEasy — Frontend
 
-Frontend untuk sistem reservasi jadwal BookEasy. Dibangun dengan Vue 3.5, TypeScript, Vite 8, dan Tailwind CSS 4.
+Vue.js SPA untuk sistem reservasi jadwal BookEasy.
+
+## Tech Stack
+
+- **Vue 3.5** — Composition API (`<script setup>`)
+- **TypeScript** — Type safety
+- **Vite 8** — Dev server & build tool
+- **Tailwind CSS 4** — Utility-first CSS
+- **Axios** — HTTP client
+- **Vitest** — Unit testing
+- **Vue Testing Library** — Component testing
 
 ## Prasyarat
 
-- Node.js 18 atau lebih baru (cek: `node -v`)
-- npm (cek: `npm -v`)
+- Node.js 18+
 - Backend Laravel sudah jalan di `http://localhost:8000`
 
 ## Setup
 
-### 1. Install Dependencies
-
 ```bash
 npm install
-```
-
-### 2. Konfigurasi Environment
-
-Tidak ada `.env` yang perlu dikonfigurasi secara manual. Frontend otomatis terhubung ke backend di `http://localhost:8000` melalui service API.
-
-### 3. Jalankan Development Server
-
-```bash
 npm run dev
 ```
 
 Frontend jalan di `http://localhost:5173`.
 
-> **Catatan:** Backend harus sudah jalan terlebih dahulu. CORS sudah dikonfigurasi di backend untuk mengizinkan origin `http://localhost:5173`.
-
 ## Testing
 
 ```bash
-npm run test
+npx vitest run
 ```
 
-Menggunakan Vitest dengan jsdom environment.
+36 test cases — semua harus lolos sebelum push.
 
 ### Struktur Test
 
 ```
 src/components/__test__/
-├── ScheduleGrid.test.ts    # Test grid ketersediaan slot
-└── BookingForm.test.ts     # Test form booking (validasi, submit)
+├── AdminLogin.test.ts
+├── AdminDashboard.test.ts
+├── ScheduleManager.test.ts
+├── HolidayManager.test.ts
+├── ScheduleGrid.test.ts
+└── BookingForm.test.ts
 ```
 
-### Skenario Test
-
-1. Grid merender slot "Tersedia" dan "Penuh" dengan benar
-2. Slot "Penuh" tidak bisa diklik
-3. Tombol submit disabled saat nama kosong
-4. Setelah submit sukses, grid ter-update tanpa reload
-
-## Build untuk Production
+## Build
 
 ```bash
 npm run build
 ```
 
-Output build ada di folder `dist/`, bisa di-deploy ke Vercel/Netlify/hosting statis lainnya.
+Output ada di folder `build/`. Bisa di-deploy ke Vercel atau hosting statis lainnya.
 
 ## Struktur Folder
 
@@ -67,29 +60,43 @@ Output build ada di folder `dist/`, bisa di-deploy ke Vercel/Netlify/hosting sta
 frontend/
 ├── src/
 │   ├── components/
-│   │   ├── ScheduleGrid.vue       # Grid ketersediaan slot
-│   │   ├── SlotButton.vue         # Tombol slot (available/booked)
-│   │   ├── BookingForm.vue        # Form pemesanan
-│   │   └── __test__/              # Vitest test files
+│   │   ├── AdminLogin.vue
+│   │   ├── AdminLayout.vue
+│   │   ├── AdminDashboard.vue
+│   │   ├── ScheduleManager.vue
+│   │   ├── HolidayManager.vue
+│   │   ├── ScheduleGrid.vue
+│   │   ├── SlotButton.vue
+│   │   ├── BookingForm.vue
+│   │   ├── ConfirmModal.vue
+│   │   └── __test__/
+│   ├── views/
+│   │   ├── HomeView.vue
+│   │   ├── AdminView.vue
+│   │   ├── AdminLoginView.vue
+│   │   ├── ScheduleView.vue
+│   │   └── HolidayView.vue
 │   ├── services/
-│   │   └── bookingApi.js          # Axios calls ke backend API
-│   ├── App.vue                    # Komponen utama (routing sederhana)
-│   └── main.ts                    # Entry point
-├── index.html
-├── package.json
-├── vite.config.ts                 # Vite + Vitest config
-├── tailwind.config.js
-└── tsconfig.json
+│   │   ├── authApi.ts
+│   │   └── adminApi.ts
+│   ├── router/index.ts
+│   ├── style.css
+│   └── main.ts
+├── vercel.json
+├── vite.config.ts
+└── package.json
 ```
 
-## Tech Stack
+## Deploy (Vercel)
 
-| Komponen | Versi | Keterangan |
-|---|---|---|
-| Vue.js | ^3.5 | Composition API (`<script setup>`) |
-| TypeScript | ~6.0 | Type safety |
-| Vite | ^8.2 | Dev server & build tool |
-| Tailwind CSS | ^4.3 | Utility-first CSS |
-| Axios | ^1.20 | HTTP client |
-| Vitest | ^4.1 | Unit testing |
-| Vue Testing Library | ^8.1 | Component testing |
+1. Push ke GitHub
+2. Import repo di Vercel
+3. Set `VITE_API_BASE_URL` ke URL backend production
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `VITE_API_BASE_URL` | Backend API URL | `http://127.0.0.1:8000/api` |
+| `VITE_APP_NAME` | App name | `BookEasy` |
+| `VITE_APP_ENV` | Environment | `development` |
