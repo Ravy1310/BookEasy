@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ScheduleController;
 
 //endpoint untuk mengambil jadwal tersedia
 Route::get('/bookings', [BookingController::class, 'index']);
@@ -20,3 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/admin/dashboard', [DashboardController::class, 'index']);
 });
+
+// Rute Manajemen Jadwal & Libur
+Route::get('/admin/schedules', [ScheduleController::class, 'getSchedules']);
+Route::put('/admin/schedules', [ScheduleController::class, 'updateSchedules']);
+Route::get('/admin/holidays', [ScheduleController::class, 'getHolidays' ]);
+Route::post('/admin/holidays', [ScheduleController::class, 'addHoliday']);
+Route::delete('/admin/holidays/{date}', [ScheduleController::class, 'removeHoliday']);
