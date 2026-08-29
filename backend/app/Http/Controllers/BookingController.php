@@ -9,6 +9,7 @@ use App\Models\Holiday;
 use Carbon\Carbon;
 use App\Http\Requests\StoreBookingRequest;
 use App\Services\BookingService;
+use App\Services\WhatsAppService;
 use App\Http\Resources\BookingResource;
 
 class BookingController extends Controller
@@ -94,17 +95,35 @@ class BookingController extends Controller
         ]);
     }
 
-    public function store(StoreBookingRequest $requsest, BookingService $BookingService) {
-        // request sudah otomatis divalidasi oleh StoreBookingRequest
+    public function store(Request $request, WhatsAppService $waService) {
+        // validasi input dasar
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:100',
+            'customer_phone' => 'required|string|max:20',
+            'time_slot' => 'required|date_format:H:i',
+            'booking_date' => 'nullable|date',
+        ]);
 
-        // Lempar data ke service agar di handle logic anti double booking
-        $booking = $BookingService->createBooking($requsest->validated());
+        $date = $validated['booking_date'] ?? Carbon::today()->toDateString();
 
-        // kalau sukses, kembalikan response JSON
+        $booking = Booking::create([
+            'customer_name' => $validated['customer_name'],
+            'customer_phone' => $validated['customer_phone'],
+            'time_slot' => $validated['time_slot'],
+            'booking_date' => $date,
+        ]);
+
+        // pemicu notifikasi WhatsApp otomatis ke pelanggan
+        $waSent = $waService->sendBookingConfirmation(
+            $booking->customer_name,
+            $booking->customer_phone,
+            \Carbon\Carbon::parse($booking->booking_date)->translatedFormat('d F Y'),
+            $booking->time_slot
+        );
+
         return response()->json([
             'success' => true,
-            'message' => 'Booking berhasil dibuat',
-            'data' => new BookingResource($booking),
+            'data' => $booking
         ], 201);
     }
 }
