@@ -3,9 +3,20 @@
 use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 
 //endpoint untuk mengambil jadwal tersedia
 Route::get('/bookings', [BookingController::class, 'index']);
 
 // endpoint untuk menyimpan booking baru
 Route::post('/bookings', [BookingController::class, 'store']);
+
+//public auth endpoint
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+//protected routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/admin/dashboard', [DashboardController::class, 'index']);
+});
