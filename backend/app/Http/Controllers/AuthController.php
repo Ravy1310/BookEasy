@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-
 
 class AuthController extends Controller
 {
-    // Menangani proses login admin dan menerbitkan token Sanctum.
     public function login(Request $request) {
         $request->validate([
             'email' => ['required', 'email'],
@@ -26,19 +23,20 @@ class AuthController extends Controller
             ], 401);
         }
 
-        // terbitkan token akses baru khusus sesi administrator
+        // Revoke token lama sebelum buat baru (cepat, tidak accumulate)
+        $user->tokens()->delete();
+
         $token = $user->createToken('admin-token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'data' => [
                 'token' => $token,
-                'user' => $user
+                'user' => $user->only('id', 'name', 'email')
             ]
         ], 200);
     }
 
-    // Terminate sesi aktif dengan menghapus token Sanctum saat ini
     public function logout(Request $request) {
         $request->user()->currentAccessToken()->delete();
 

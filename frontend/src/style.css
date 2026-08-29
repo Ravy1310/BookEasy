@@ -1,1 +1,245 @@
 @import "tailwindcss";
+
+@theme {
+    /* --- Warna brand & surface --- */
+    --color-bke-primary:                   #6366F1;
+    --color-bke-primary-hover:             #4338CA;
+    --color-bke-primary-light:             #EEF2FF;
+    --color-bke-primary-container:         #6366F1;
+    --color-bke-on-primary:                #ffffff;
+    --color-bke-on-primary-container:      #dad7ff;
+
+    --color-bke-accent:                    #F59E0B;
+    --color-bke-accent-light:              #FFFBEB;
+
+    --color-bke-secondary:                 #16A34A;
+    --color-bke-success-light:             #F0FDF4;
+
+    --color-bke-danger:                    #DC2626;
+    --color-bke-danger-light:              #FEF2F2;
+
+    --color-bke-surface:                   #FAFAF9;
+    --color-bke-surface-variant:           #E7E5E4;
+    --color-bke-surface-container:         #F5F5F4;
+    --color-bke-surface-container-low:     #FAFAF9;
+    --color-bke-surface-container-high:    #E7E5E4;
+    --color-bke-surface-container-highest: #D6D3D1;
+    --color-bke-surface-container-lowest:  #FFFFFF;
+
+    --color-bke-on-surface:                #1C1917;
+    --color-bke-on-surface-variant:        #57534E;
+
+    --color-bke-outline:                   #78716C;
+    --color-bke-outline-variant:           #D6D3D1;
+
+    /* --- Font family --- */
+    --font-display: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-sans: "Inter", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* =============================================
+   Spacing custom sebagai CSS vars biasa
+   ============================================= */
+:root {
+    --bke-spacing-xs:  4px;
+    --bke-spacing-sm:  8px;
+    --bke-spacing-md:  12px;
+    --bke-spacing-lg:  16px;
+    --bke-spacing-xl:  24px;
+    --bke-spacing-2xl: 32px;
+    --bke-spacing-3xl: 48px;
+    --bke-spacing-4xl: 64px;
+}
+
+/* --- Utility classes tipografi --- */
+.font-headline-lg {
+    font-family: var(--font-display);
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.font-headline-sm {
+    font-family: var(--font-display);
+    font-size: 18px;
+    line-height: 28px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.font-label-md {
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 600;
+}
+
+.font-body-md {
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+}
+
+.font-caption {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+}
+
+/* Material Symbols variation settings */
+.material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+[data-weight="fill"] .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* =============================================
+   ANIMATIONS
+   ============================================= */
+
+/* --- Entrance animations --- */
+@keyframes fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* --- Animation utility classes --- */
+.anim-fade-in-up {
+    animation: fade-in-up 0.5s ease-out both;
+}
+
+.anim-fade-in {
+    animation: fade-in 0.4s ease-out both;
+}
+
+.anim-slide-down {
+    animation: slide-down 0.3s ease-out both;
+}
+
+.anim-slide-up {
+    animation: slide-up 0.3s ease-out both;
+}
+
+.anim-scale-in {
+    animation: scale-in 0.2s ease-out both;
+}
+
+/* --- Stagger delay utilities --- */
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 100ms; }
+.stagger-3 { animation-delay: 150ms; }
+.stagger-4 { animation-delay: 200ms; }
+.stagger-5 { animation-delay: 250ms; }
+.stagger-6 { animation-delay: 300ms; }
+.stagger-7 { animation-delay: 350ms; }
+.stagger-8 { animation-delay: 400ms; }
+
+/* --- Route transition --- */
+.route-enter-active {
+    animation: fade-in-up 0.3s ease-out;
+}
+.route-leave-active {
+    animation: fade-in 0.15s ease-in reverse;
+}
+
+/* --- Slot button interactions --- */
+.slot-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.slot-btn:not(:disabled):hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+.slot-btn:not(:disabled):active {
+    transform: scale(0.97);
+}
+.slot-btn.selected {
+    animation: scale-in 0.2s ease-out;
+}
+
+/* --- Toggle switch --- */
+.toggle-track {
+    transition: background-color 0.2s ease;
+}
+.toggle-ball {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Clock tick --- */
+@keyframes clock-tick {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(3deg); }
+}
+
+/* --- Toast slide --- */
+.toast-enter {
+    animation: slide-down 0.3s ease-out;
+}
+.toast-leave {
+    animation: fade-in 0.2s ease-in reverse;
+}
+
+/* =============================================
+   REDUCED MOTION — aksesibilitas
+   ============================================= */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
