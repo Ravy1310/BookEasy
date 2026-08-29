@@ -12,22 +12,16 @@ Aplikasi ini juga terintegrasi dengan **WhatsApp** untuk mengirim notifikasi kon
 
 ## Fitur Utama
 
-### Sudah Diimplementasi
-
-- **Slot Availability Grid** — Grid jadwal real-time dari database, menampilkan status "Tersedia" dan "Penuh" dengan visual yang jelas
-- **Guest Checkout** — Pelanggan bisa booking tanpa login/registrasi, cukup isi nama dan nomor WhatsApp
-- **Server-Side Validation** — Semua validasi dilakukan di backend menggunakan Laravel Form Request, termasuk pengecekan slot yang sudah terisi
-- **Race Condition Protection** — Menggunakan `DB::transaction()` + `lockForUpdate()` untuk mencegah dua request booking slot yang sama secara bersamaan
-- **Auto-Refresh UI** — Setelah booking berhasil, grid jadwal ter-update otomatis tanpa perlu reload browser
-- **Admin Authentication** — Login admin dengan Laravel Sanctum (token-based auth)
-- **Admin Dashboard** — Melihat daftar booking hari ini
-
-### Akan Datang
-
-- **Manajemen Jadwal & Hari Libur** — Admin bisa mengatur jam operasional per hari dan menandai hari libur
-- **WhatsApp Notifikasi & Reminder** — Integrasi Fonnte WhatsApp Business API untuk:
-  - Mengirim notifikasi konfirmasi booking ke nomor pelanggan setelah booking berhasil
-  - Mengirim reminder WhatsApp X jam sebelum jadwal terjadwal (configurable per admin)
+- **Slot Availability Grid** — Grid jadwal real-time dari database, menampilkan status "Tersedia" dan "Penuh"
+- **Guest Checkout** — Booking tanpa login/registrasi, cukup isi nama dan nomor WhatsApp
+- **Server-Side Validation** — Validasi di backend menggunakan Laravel Form Request
+- **Race Condition Protection** — `DB::transaction()` + `lockForUpdate()` mencegah double-booking
+- **Auto-Refresh UI** — Grid jadwal ter-update otomatis setelah booking
+- **Admin Authentication** — Login admin dengan Laravel Sanctum
+- **Admin Dashboard** — Daftar booking hari ini
+- **Manajemen Jadwal** — Atur jam operasional per hari (Senin-Minggu)
+- **Manajemen Hari Libur** — Tandai tanggal yang tidak beroperasi
+- **WhatsApp Notifikasi** — Integrasi Fonnte WhatsApp Business API
 
 ## Tech Stack
 
@@ -35,9 +29,9 @@ Aplikasi ini juga terintegrasi dengan **WhatsApp** untuk mengirim notifikasi kon
 |-------|-----------|
 | Backend | Laravel 13.x (REST API, PHP 8.3) |
 | Frontend | Vue 3.5 + TypeScript + Vite 8 + Tailwind CSS 4 |
-| Database | MySQL 8.x |
+| Database | PostgreSQL (Supabase) |
 | Auth | Laravel Sanctum (token-based, untuk admin) |
-| WhatsApp API | Fonnte (akan diintegrasikan) |
+| WhatsApp API | Fonnte |
 | Testing Backend | Pest PHP 4.x |
 | Testing Frontend | Vitest + Vue Testing Library |
 
@@ -67,7 +61,7 @@ bookeasy/
 ### Prasyarat
 
 - PHP 8.3+ & Composer
-- MySQL 8.x
+- PostgreSQL (atau Supabase)
 - Node.js 18+ & npm
 
 ### 1. Setup Backend
@@ -77,14 +71,14 @@ cd backend
 cp .env.example .env
 ```
 
-Edit `.env`, isi koneksi MySQL:
+Edit `.env`, isi koneksi database:
 
 ```
-DB_CONNECTION=mysql
+DB_CONNECTION=pgsql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=5432
 DB_DATABASE=bookeasy
-DB_USERNAME=root
+DB_USERNAME=
 DB_PASSWORD=
 ```
 
@@ -123,11 +117,18 @@ npm run test
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| GET | `/api/bookings?date=YYYY-MM-DD` | No | Mengambil daftar slot + status untuk tanggal tertentu |
-| POST | `/api/bookings` | No | Membuat booking baru (validasi via Form Request) |
-| POST | `/api/auth/login` | No | Admin login, mengembalikan Sanctum token |
-| POST | `/api/auth/logout` | Yes | Admin logout, invalidate token |
-| GET | `/api/dashboard?date=YYYY-MM-DD` | Yes | Dashboard admin: daftar booking hari ini |
+| GET | `/api/health` | No | Health check |
+| GET | `/api/bookings?date=YYYY-MM-DD` | No | Ambil daftar slot + status |
+| POST | `/api/bookings` | No | Booking baru |
+| POST | `/api/auth/login` | No | Admin login |
+| POST | `/api/auth/logout` | Yes | Admin logout |
+| GET | `/api/admin/dashboard` | Yes | Dashboard admin |
+| GET | `/api/admin/schedules` | Yes | Jadwal operasional |
+| PUT | `/api/admin/schedules` | Yes | Update jadwal |
+| GET | `/api/admin/holidays` | Yes | Daftar hari libur |
+| POST | `/api/admin/holidays` | Yes | Tambah hari libur |
+| DELETE | `/api/admin/holidays/{date}` | Yes | Hapus hari libur |
+| DELETE | `/api/admin/bookings/{id}` | Yes | Batalkan booking |
 
 ### Response Format
 
@@ -159,8 +160,12 @@ Jalankan: `php artisan test`
 
 ```
 src/components/__test__/
-├── ScheduleGrid.test.ts    # Render slot available/booked
-└── BookingForm.test.ts     # Submit button behavior
+├── AdminLogin.test.ts         # Login admin
+├── AdminDashboard.test.ts     # Dashboard admin
+├── ScheduleManager.test.ts    # Manajemen jadwal
+├── HolidayManager.test.ts     # Manajemen hari libur
+├── ScheduleGrid.test.ts       # Grid ketersediaan slot
+└── BookingForm.test.ts        # Form booking
 ```
 
 Jalankan: `npm run test`
