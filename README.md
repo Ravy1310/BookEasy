@@ -2,6 +2,8 @@
 
 Aplikasi web self-service untuk UMKM jasa (barbershop, salon, klinik kecantikan, studio foto, dll) agar pelanggan bisa booking jadwal secara online tanpa bolak-balik chat WhatsApp.
 
+![BookEasy Homepage](screenshots/homepage.png)
+
 ## Tentang BookEasy
 
 Mayoritas UMKM jasa di Indonesia masih mengelola reservasi secara manual — buku catatan atau chat WhatsApp langsung. Model ini rentan terhadap **double-booking**, keterbatasan waktu respons admin, dan tidak ada jejak data terpusat.
@@ -169,12 +171,6 @@ src/components/__test__/
 ```
 
 Jalankan: `npm run test`
-
-## Dokumentasi Lengkap
-
-- `Ravy/prd.md` — Product Requirements Document
-- `Ravy/Architecture.md` — Rencana implementasi teknis
-- `Ravy/DESIGN.md` — Design system & UX spec
 
 ---
 
