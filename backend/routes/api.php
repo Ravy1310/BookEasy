@@ -7,6 +7,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ScheduleController;
 
+// Health check
+Route::get('/health', fn () => response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()]));
+
 //endpoint untuk mengambil jadwal tersedia
 Route::get('/bookings', [BookingController::class, 'index']);
 

@@ -1,0 +1,14 @@
+vendor/
+node_modules/
+.env
+.env.backup
+.env.production
+*.log
+.DS_Store
+.phpunit.cache
+.phpactor.json
+.idea/
+.vscode/
+/storage/pail
+/public/build
+Thumbs.db
